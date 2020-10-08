@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-data_path = "./data/"
+data_path = ".\\data\\"
 test = pd.read_csv(data_path + "test.csv")
 
 # Delta 1
