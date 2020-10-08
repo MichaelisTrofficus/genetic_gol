@@ -40,10 +40,9 @@ class GeneticAlgorithm:
         fitness_values = np.zeros(len(self._population))
 
         for generation in range(self.max_gen):
-            self._population, scores = self.evolve(stop_board, delta)
-            if generation % 100 == 0:
-                print("Best scores:", scores[:self._retain_len])
-
+            self._population, fitness_values = self.evolve(stop_board, delta)
+            # if generation % 100 == 0:
+            #    print("Best scores:", fitness_values[:self._retain_len])
         return self._population[0], fitness_values[0]
 
     def evolve(self, stop_board, delta):

@@ -6,34 +6,36 @@ import pandas as pd
 import numpy as np
 from helpers.plots import visualize_boards, visualize_board
 from helpers.conway_rules import conway_steps
+from tqdm import tqdm
 
 
-data_path = "./data/"
-delta1 = pd.read_csv(data_path + "delta1.csv")
-result = delta1.copy()
+if __name__ == '__main__':
 
-experiments = delta1.values
+    data_path = ".\\data\\"
+    delta1 = pd.read_csv(data_path + "delta1.csv")
+    result = delta1.copy()
 
-for index, experiment in enumerate(experiments):
-    print(index)
-    delta = experiment[1]
-    stop_board = np.reshape(experiment[2: 2+625], (25, 25))
+    experiments = delta1.values
 
-    init_strategy = BoundedSpace(seed_board=conway_steps(stop_board, delta))
-    selection_strategy = BestFitnessSelection(leftovers_probability=0.05)
-    crossover_strategy = UniformCrossover()
+    for index, experiment in enumerate(tqdm(experiments)):
+        delta = experiment[1]
+        stop_board = np.reshape(experiment[2: 2+625], (25, 25))
 
-    ga = GeneticAlgorithm(population_size=50,
-                          max_gen=500,
-                          initialization_strategy=init_strategy,
-                          selection_strategy=selection_strategy,
-                          crossover_strategy=crossover_strategy,
-                          parents_ratio=0.8,
-                          mutation_probability=0.1,
-                          elitism_ratio=0.01,
-                          fitness_parallel=True)
+        init_strategy = BoundedSpace(seed_board=conway_steps(stop_board, delta))
+        selection_strategy = BestFitnessSelection(leftovers_probability=0.05)
+        crossover_strategy = UniformCrossover()
 
-    gen_start_board, fitness_value = ga.run(stop_board, delta)
-    print("Fitness Value of Solution:", fitness_value)
-    result.loc[index, 2:] = gen_start_board.reshape((-1, 625))
-    result.to_csv("./data/result.csv")
+        ga = GeneticAlgorithm(population_size=20,
+                              max_gen=100,
+                              initialization_strategy=init_strategy,
+                              selection_strategy=selection_strategy,
+                              crossover_strategy=crossover_strategy,
+                              parents_ratio=0.8,
+                              mutation_probability=0.1,
+                              elitism_ratio=0.01,
+                              fitness_parallel=False)
+
+        gen_start_board, fitness_value = ga.run(stop_board, delta)
+        print("Fitness Value of Solution:", fitness_value)
+        result.loc[index, 2:] = gen_start_board.reshape((-1, 625))
+        result.to_csv(".\\data\\result.csv")
