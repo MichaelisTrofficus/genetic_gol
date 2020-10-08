@@ -2,6 +2,7 @@ from crossover_strategies.strategies import UniformCrossover
 from initialization_strategies.strategies import Random, RandomWithWarmup, BoundedSpace
 from selection_strategies.strategies import ProportionateSelection, BestFitnessSelection
 from GeneticAlgorithm import GeneticAlgorithm
+from ParalellGeneticAlgorithm import ParalellGeneticAlgorithm
 import pandas as pd
 import numpy as np
 from helpers.plots import visualize_boards, visualize_board
@@ -15,7 +16,6 @@ result = delta1.copy()
 experiments = delta1.values
 
 for index, experiment in enumerate(experiments):
-    print(index)
     delta = experiment[1]
     stop_board = np.reshape(experiment[2: 2+625], (25, 25))
 
@@ -23,7 +23,21 @@ for index, experiment in enumerate(experiments):
     selection_strategy = BestFitnessSelection(leftovers_probability=0.05)
     crossover_strategy = UniformCrossover()
 
-    ga = GeneticAlgorithm(population_size=50,
+    ga = ParalellGeneticAlgorithm(population_size=50,
+                             max_gen=500,
+                             initialization_strategy=init_strategy,
+                             selection_strategy=selection_strategy,
+                             crossover_strategy=crossover_strategy,
+                             parents_ratio=0.8,
+                             mutation_probability=0.1,
+                             elitism_ratio=0.01,
+                             fitness_parallel=False)
+
+    gen_start_board, fitness_value = ga.run(stop_board, delta)
+    print(gen_start_board)
+
+    """
+        ga = GeneticAlgorithm(population_size=50,
                           max_gen=500,
                           initialization_strategy=init_strategy,
                           selection_strategy=selection_strategy,
@@ -37,3 +51,5 @@ for index, experiment in enumerate(experiments):
     print("Fitness Value of Solution:", fitness_value)
     result.loc[index, 2:] = gen_start_board.reshape((-1, 625))
     result.to_csv("./data/result.csv")
+    """
+
